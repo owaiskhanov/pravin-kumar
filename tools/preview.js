@@ -48,26 +48,6 @@ const MW = +mv[1], MH = +mv[2];
 const mark = (x, y, w) => `<g transform="translate(${x} ${y}) scale(${w / MW})">${markD.map((p) => `<path d="${p.d}" fill="${p.fill}" fill-rule="evenodd"/>`).join('')}</g>`;
 
 const data = JSON.parse(fs.readFileSync('tools/preview-data.json', 'utf8'));
-// ₹ outlines are taken from the bundled glyph font so the mock renders the
-// same mark the browser will (the text faces have no rupee sign).
-const rupeeGlyph = (() => {
-  const cache = {};
-  return (which) => {
-    if (cache[which]) return cache[which];
-    const buf = fs.readFileSync(`assets/fonts/rupee-${which}.woff2`);
-    // woff2 -> ttf isn't available synchronously, so use the ttf copies the
-    // build script writes to /tmp; fall back to nothing if absent.
-    const ttf = fs.readFileSync(`/tmp/rupee-${which}.ttf`);
-    const f = opentype.parse(ttf.buffer.slice(ttf.byteOffset, ttf.byteOffset + ttf.byteLength));
-    void buf;
-    const g = f.charToGlyph('\u20B9');
-    return (cache[which] = {
-      d: (x, y, size) => g.getPath(x, y, size).toPathData(2),
-      advance: (size) => f.getAdvanceWidth('\u20B9', size),
-    });
-  };
-})();
-
 (async () => {
   const serif = await load('cormorant-garamond', 'cormorant-garamond-latin-500-normal.woff2');
   const serif600 = await load('cormorant-garamond', 'cormorant-garamond-latin-600-normal.woff2');
@@ -129,12 +109,10 @@ const rupeeGlyph = (() => {
       cy += 30 * scale;
       {
         const size = 36 * scale;
-        const g = rupeeGlyph('serif');
-        svg += `<path d="${g.d(x + cardPad, cy, size)}" fill="${INK}"/>`;
-        const digitsX = x + cardPad + g.advance(size) + 4 * scale;
-        const digits = text(serif600, card.price.replace('₹', ''), size, digitsX + 6 * scale, cy);
+        const digits = text(serif600, card.price, size, x + cardPad, cy);
         svg += digits.svg;
-        svg += text(sans, '/ month', 12 * scale, digitsX + digits.width + 10 * scale, cy - 2 * scale, { fill: MUTED, tracking: 0.6 * scale }).svg;
+        svg += text(sans, '/ month', 12 * scale, x + cardPad + digits.width + 10 * scale,
+          cy - 2 * scale, { fill: MUTED, tracking: 0.6 * scale }).svg;
       }
       cy += 24 * scale;
       wrap(sans, card.note, body * 0.78, innerW).forEach((ln) => {
