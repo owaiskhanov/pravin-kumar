@@ -132,7 +132,6 @@ function wordmark(f, text, size, tracking, x, baseline) {
 `;
   fs.writeFileSync('assets/img/pravin-kumar-lockup-horizontal.svg', horizontal);
 
-  fs.writeFileSync('assets/img/pravin-kumar-logo-mark.svg', mark.replace('viewBox', 'viewBox'));
   console.log('monogram', m.w, m.h, '| lockup bytes', lockup.length);
   await sharp(Buffer.from(horizontal), { density: 200 }).resize({ height: 120 }).flatten({ background: '#f7f1e7' }).png().toFile('/tmp/horiz.png');
   await sharp(Buffer.from(lockup), { density: 144 }).resize({ width: 900 }).flatten({ background: '#f7f1e7' }).png().toFile('/tmp/lockup.png');
