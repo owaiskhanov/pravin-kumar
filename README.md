@@ -1,1 +1,107 @@
-# pravin-kumar
+# Pravin Kumar &amp; Co — proposal site
+
+A single-page, premium growth proposal for **Pravin Kumar &amp; Co** (curtains, tapestry and chair
+fabrics; Mumbai, since 1990). Static HTML/CSS/JS — no build step, no framework, no tracking.
+
+**Live plan:** social media management **₹25,000/month** · performance marketing **₹15,000/month**
+(ad spend billed separately; ChatGPT ads subject to market availability).
+
+## Run it
+
+```bash
+npm install          # dev-only tooling (asset generation + tests)
+npm run dev          # http://localhost:4173
+npm test             # 30 QA checks (content, a11y, print, splash, dropdowns)
+```
+
+Deploy by uploading the repository root to any static host. All paths are relative, so the site
+works at a domain root or in a sub-path such as `/proposal/`.
+
+## Structure
+
+```
+index.html                     page + metadata, OG/Twitter, manifest, icons
+manifest.webmanifest           generated
+favicon.ico                    generated (16/32/48 px)
+assets/css/styles.css          beige/brand theme, responsive + print styles
+assets/js/site.js              splash intro, scroll reset, accessible dropdowns
+assets/fonts/                  self-hosted Cormorant Garamond + Jost (OFL) + ₹ glyph faces
+assets/img/                    logo lockups, favicon set, 1200×630 social image
+assets/brand/                  official logo artwork + originals pulled from public listings
+tools/build-logo.js            logo raster → crisp SVG lockups
+tools/build-assets.js          icons, social image and manifest
+tools/serve.js                 dependency-free static preview server
+tools/build-currency-font.js   single-glyph ₹ fallback faces (bundled)
+tools/preview.js               SVG/PNG layout mock renders (visual review)
+tools/print-proof.html         single-page approximation of the print layout
+tests/qa.test.js               QA suite
+```
+
+## Brand
+
+Palette and type are derived from the official logo supplied for `pravinkumars.com`:
+
+| Token | Value | Use |
+| --- | --- | --- |
+| Ink | `#17120f` | headings and body copy |
+| Logo red | `#b8342c` | accents, index numerals, price markers |
+| Beige | `#f5eee2` / `#faf6ef` | page and card surfaces |
+| Warm line | `#ded1bb` | borders |
+
+Type: **Cormorant Garamond** (display, matching the logo's engraved serif) and **Jost** (interface).
+Neither face ships the Indian rupee sign, so two 600-byte single-glyph faces (`rupee-serif.woff2`,
+`rupee-sans.woff2`) are bundled and placed directly after them in the font stacks — the price mark
+stays in-brand on every device instead of silently falling back to a system font.
+The site's own template CSS shipped no usable palette or webfont, and its asset files could not be
+downloaded from the build sandbox, so the logo was taken from the brand's public directory listing
+and re-drawn as vector lockups (`tools/build-logo.js`) to stay sharp on retina and in print.
+
+## Interactions
+
+- **Cards:** both dropdowns start collapsed so the two cards stay short, even and scannable; the
+  whole scope is still one tap away, and the print/PDF output expands everything.
+- **Splash:** “Made for” label + logo blur fade-in, then the overlay slides up and is removed from
+  the DOM. `Skip intro`, `Escape`, click-outside and `prefers-reduced-motion` all exit early; the
+  page is `inert` behind it and scroll is unlocked on exit.
+- **Scroll reset:** `history.scrollRestoration = 'manual'`, reset on load and on `pageshow`, so the
+  landing never opens mid-page (also after a splash exit).
+- **Dropdowns:** disclosure pattern (`<button aria-expanded aria-controls>` inside a heading,
+  labelled `role="region"` panels). `Enter`/`Space` toggle, `ArrowUp`/`ArrowDown`/`Home`/`End`
+  move between dropdowns, `Escape` collapses. Collapsed panels are `inert` + `aria-hidden`.
+- **Print/PDF:** splash and header hidden, cards stacked in two columns without splitting, and every
+  dropdown is expanded so the PDF carries the full scope.
+- **Reduced motion:** animations become instant; nothing depends on motion to be readable.
+- **No JS:** the splash never appears, all content is visible and every list is expanded.
+
+## Editing content
+
+Everything lives in `index.html`. Prices are `.card__amount` (₹25,000 / ₹15,000) and the per-month
+label is `.card__period`. Each dropdown is a `<h3><button class="acc__trigger">` plus its
+`.acc__panel`; keep `aria-controls`/`id` pairs in sync and update the `.acc__count` number when
+adding or removing a point. Social card claims are limited to the supplied plan points; the
+performance card holds exactly ten numbered points.
+
+`assets/img/og-cover.png` and `og-cover.svg` are generated from the same copy — after changing the
+prices or the headline, re-run `npm run build:assets` to regenerate the share image.
+
+## Metadata
+
+Canonical, OG and Twitter tags point at `https://www.pravinkumars.com/proposal/`. If the site is
+hosted elsewhere, update the three absolute URLs (`link[rel=canonical]`, `og:url`, `og:image`) and
+the `start_url` in `manifest.webmanifest`. The page is `noindex` because it is a client-facing
+proposal rather than a marketing page.
+
+## QA
+
+`npm run dev` then open the site; `node tools/preview.js` re-renders the desktop/mobile layout
+mocks and `tools/print-proof.html` shows the print layout. `npm test` covers: single H1 and no hero tagline, supplied-point coverage, ten numbered
+performance points, exact prices and callout copy, absence of bundle/"Proposed" language, single
+brand only, logo equal-height/auto-width/fallback rules, all local asset references resolving, OG
+image dimensions (1200×630), manifest icons, dropdown ARIA wiring, landmarks and skip link, WCAG AA
+contrast maths for every text token, mobile-overflow guards, print rules, reduced motion, splash
+auto-close/skip/Escape/reduced-motion paths, scroll reset, keyboard dropdown navigation, panel state
+for assistive tech, print expansion, and an axe-core scan (0 WCAG 2.1 A/AA violations).
+
+Automated checks run in jsdom, plus mathematical colour-contrast verification. A visual pass in
+Chrome/Safari/Firefox and a real PDF export should still be eyeballed once before sending — no
+browser runtime was installable in the build sandbox.
