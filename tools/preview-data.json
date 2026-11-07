@@ -1,0 +1,131 @@
+{
+ "viewports": [
+  {
+   "name": "desktop",
+   "W": 1440,
+   "pad": 130,
+   "cols": 2,
+   "scale": 1
+  },
+  {
+   "name": "mobile",
+   "W": 390,
+   "pad": 20,
+   "cols": 1,
+   "scale": 0.82
+  }
+ ],
+ "cards": [
+  {
+   "index": "01",
+   "kicker": "Social media",
+   "title": "Social media management",
+   "lede": "Founder-led content for a premium textiles house.",
+   "price": "₹25,000",
+   "note": "Content, production and monthly reporting included.",
+   "numbered": false,
+   "groups": [
+    {
+     "title": "Content & production",
+     "points": [
+      "15 reels every month",
+      "2–3 carousels per month",
+      "17–18 pieces in total, per month",
+      "3 shoot days, planned in advance",
+      "B-roll from existing footage",
+      "Educational and trending formats",
+      "Indirect-sales storytelling, never hard selling",
+      "AI presentations, models and moodboards"
+     ]
+    },
+    {
+     "title": "Positioning & audience",
+     "points": [
+      "Founder-led, premium brand positioning",
+      "English-language content throughout",
+      "Audience: interior designers, architects, hotel and restaurant buyers, premium homeowners",
+      "Awareness as the first measurable goal",
+      "No price or discount promotions",
+      "Separate creatives for separate price segments"
+     ]
+    },
+    {
+     "title": "Reach, leads & reporting",
+     "points": [
+      "Lead tracking from comment and DM to enquiry",
+      "Location SEO for Mumbai discovery",
+      "Content that builds store curiosity and catalogue interest",
+      "Product expertise and fabric variety shown, not claimed",
+      "Monthly review focused on quality leads"
+     ]
+    }
+   ]
+  },
+  {
+   "index": "02",
+   "kicker": "Paid media",
+   "title": "Performance marketing",
+   "lede": "Meta and ChatGPT ads, built for qualified enquiries.",
+   "price": "₹15,000",
+   "note": "Ad spend billed separately, directly to the platform. ChatGPT ads subject to market availability.",
+   "numbered": true,
+   "groups": [
+    {
+     "title": "Targeting & awareness",
+     "points": [
+      [
+       "1",
+       "Interest, behaviour and location targeting for designers, trade and premium buyers."
+      ],
+      [
+       "2",
+       "Awareness campaigns that introduce the brand to cold audiences."
+      ]
+     ]
+    },
+    {
+     "title": "Retargeting, creative & testing",
+     "points": [
+      [
+       "3",
+       "Retargeting for site visitors, engagers and past enquiries."
+      ],
+      [
+       "4",
+       "Fresh creative produced and tested every cycle."
+      ],
+      [
+       "5",
+       "Structured creative testing across hooks, formats and audiences."
+      ]
+     ]
+    },
+    {
+     "title": "Quality, tracking & optimisation",
+     "points": [
+      [
+       "6",
+       "Lead-quality screening, with forms tuned for serious buyers."
+      ],
+      [
+       "7",
+       "Pixel, conversions API and campaign tracking set up and maintained."
+      ],
+      [
+       "8",
+       "Monthly reporting on leads, cost per lead and lead quality."
+      ],
+      [
+       "9",
+       "Continuous optimisation of audiences, creative and placements."
+      ],
+      [
+       "10",
+       "Budget guidance, with month one run as an awareness-led launch."
+      ]
+     ]
+    }
+   ]
+  }
+ ]
+}
