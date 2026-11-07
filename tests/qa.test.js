@@ -66,12 +66,13 @@ test('only supplied plan points are present', () => {
   const social = $(document, '#social-title').closest('.card').textContent;
   const perf = $(document, '#performance-title').closest('.card').textContent;
   // supplied social points
-  for (const p of ['15 reels', '2–3 carousels', '17–18 pieces', '3 shoot', 'B-roll', 'Educational',
+  for (const p of ['10–12 reels', '2–3 carousels', '17–18 pieces', '3 shoot', 'B-roll', 'Educational',
     'Indirect-sales', 'Founder-led', 'English-language', 'interior designers', 'AI presentations',
     'Awareness', 'No price or discount', 'Separate creatives', 'Lead tracking', 'Location SEO',
     'quality leads', 'store curiosity', 'fabric variety', 'moodboards']) {
     assert.ok(social.includes(p), `social card missing: ${p}`);
   }
+  assert.ok(!/(?<![\d–])15 reels/.test(social), 'the old 15-reel count is gone');
   // no invented facts from the old brand / wrong business type
   assert.ok(!/Pravin Kumar & Sons/i.test(html), 'no legacy "& Sons" name');
   assert.ok(!/furniture|real estate|clinic/i.test(html), 'no unrelated vertical language');
