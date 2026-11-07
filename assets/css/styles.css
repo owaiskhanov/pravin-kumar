@@ -431,7 +431,16 @@ ul, ol { padding: 0; list-style: none; }
   font-weight: 600;
   font-size: clamp(2rem, 3.6vw, 2.6rem);
   line-height: 1;
-  letter-spacing: -.01em;
+  letter-spacing: -.005em;
+  font-variant-numeric: lining-nums tabular-nums;
+  font-feature-settings: "lnum" 1, "tnum" 1;
+}
+/* the rupee sign comes from its own small face; keep it visually married to
+   the figures without dragging the fallback metrics into the number */
+.card__amount .rupee {
+  font-family: "Rupee Serif", var(--serif);
+  font-weight: 400;
+  margin-right: .12em;
 }
 .card__period { color: var(--ink-muted); font-size: .85rem; letter-spacing: .04em; }
 
