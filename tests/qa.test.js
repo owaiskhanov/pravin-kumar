@@ -100,9 +100,7 @@ test('performance card: Meta + ChatGPT, exactly 10 numbered points', () => {
 test('pricing, no bundle, ad-spend caveats', () => {
   const { document } = new JSDOM(html).window;
   const amounts = $$(document, '.card__amount').map((n) => n.textContent.trim());
-  assert.deepEqual(amounts, ['₹25,000', '₹15,000']);
-  // the sign is its own element so the bundled glyph face is used for it
-  $$(document, '.card__amount .rupee').forEach((n) => assert.equal(n.textContent, '₹'));
+  assert.deepEqual(amounts, ['25,000', '15,000']);
   assert.equal($$(document, '.card__period').length, 2);
   assert.ok($$(document, '.card__period').every((n) => /month/.test(n.textContent)));
   const body = document.body.textContent;
@@ -426,48 +424,20 @@ test('every @font-face file ships with the site', () => {
   for (const f of new Set(faces)) {
     assert.ok(fs.existsSync(path.join(ROOT, 'assets', f)), `missing font: ${f}`);
   }
-  assert.equal(faces.filter((f) => /rupee-serif/.test(f)).length, 1, 'rupee serif face is bundled once');
-  assert.equal(faces.filter((f) => /rupee-sans/.test(f)).length, 1, 'rupee sans face is bundled once');
 });
 
-test('the bundled ₹ faces carry real, upright outlines in the price faces', async () => {
-  const opentype = require('opentype.js');
-  const fs2 = require('fs');
-  const path2 = require('path');
-  const wawoff2 = require('wawoff2');
-  for (const which of ['serif', 'sans']) {
-    const file = path2.join(ROOT, `assets/fonts/rupee-${which}.woff2`);
-    // woff2 -> ttf so the outlines can be inspected
-    const ttf = Buffer.from(await wawoff2.decompress(fs2.readFileSync(file)));
-    const font = opentype.parse(ttf.buffer.slice(ttf.byteOffset, ttf.byteOffset + ttf.byteLength));
-    const glyph = font.charToGlyph('\u20B9');
-    assert.ok(glyph.index > 0, `${which}: ₹ is mapped in the cmap`);
-    const cmds = glyph.path.commands;
-    assert.ok(cmds.length > 10, `${which}: outlines present (${cmds.length} commands)`);
-    // opentype.js emits CFF outlines, which keep PostScript cubics: cubic or
-    // quadratic curves are both fine, but there must be real curves and no
-    // straight-line approximation of the bowl.
-    const curves = cmds.filter((c) => c.type === 'C' || c.type === 'Q').length;
-    assert.ok(curves >= 8, `${which}: curved outlines present (${curves} curves)`);
-    assert.equal(font.outlinesFormat, 'cff', `${which}: outlines match the emitted flavour`);
-    const ys = cmds.flatMap((c) => [c.y, c.y1, c.y2]).filter(Number.isFinite);
-    const xs = cmds.flatMap((c) => [c.x, c.x1, c.x2]).filter(Number.isFinite);
-    const height = Math.max(...ys) - Math.min(...ys);
-    const width = Math.max(...xs) - Math.min(...xs);
-    assert.ok(height > 0 && width > 0, `${which}: glyph has ink`);
-    assert.ok(Math.min(...ys) >= -5, `${which}: sits on the baseline (upright, not flipped)`);
-    assert.ok(height / width > 1.05 && height / width < 2.2, `${which}: ₹ proportions (h/w ${(height / width).toFixed(2)})`);
-    assert.ok(glyph.advanceWidth > width * 0.85, `${which}: sidebearings are sane`);
-  }
-});
-
-test('the price mark is a real rupee glyph, not a system fallback', () => {
+test('prices carry no rupee glyph: plain figures only', () => {
   const { document } = new JSDOM(html).window;
   const amounts = $$(document, '.card__amount').map((n) => n.textContent.trim());
-  amounts.forEach((a) => assert.ok(a.startsWith('\u20B9'), `missing ₹: ${a}`));
-  assert.equal($$(document, '.card__amount .rupee').length, 2, 'the ₹ is set in its own face');
-  // the faces we ship have no ₹, so a dedicated single-glyph face must exist
-  assert.match(css, /font-family:\s*"Rupee Serif"/);
-  assert.match(css, /--serif:[^;]*"Rupee Serif"/);
-  assert.match(css, /--sans:[^;]*"Rupee Sans"/);
+  amounts.forEach((a) => {
+    assert.ok(/^[\d,]+$/.test(a), `digits only: ${a}`);
+    assert.ok(!a.includes('\u20B9'), `no ₹ in ${a}`);
+  });
+  // no currency-font plumbing may linger anywhere
+  assert.ok(!html.includes('\u20B9'), 'page markup is free of ₹');
+  assert.ok(!/rupee/i.test(html), 'no rupee span left in the markup');
+  assert.ok(!/rupee/i.test(css), 'stylesheet has no rupee faces or rules');
+  assert.ok(!/rupee/i.test(js), 'behaviour layer has no rupee hooks');
+  assert.ok(fs.readdirSync(path.join(ROOT, 'assets/fonts')).every((f) => !/rupee/i.test(f)),
+    'no rupee font files shipped');
 });
