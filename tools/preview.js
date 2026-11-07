@@ -132,7 +132,7 @@ const rupeeGlyph = (() => {
         const g = rupeeGlyph('serif');
         svg += `<path d="${g.d(x + cardPad, cy, size)}" fill="${INK}"/>`;
         const digitsX = x + cardPad + g.advance(size) + 4 * scale;
-        const digits = text(serif600, card.price.replace('₹', ''), size, digitsX, cy);
+        const digits = text(serif600, card.price.replace('₹', ''), size, digitsX + 6 * scale, cy);
         svg += digits.svg;
         svg += text(sans, '/ month', 12 * scale, digitsX + digits.width + 10 * scale, cy - 2 * scale, { fill: MUTED, tracking: 0.6 * scale }).svg;
       }
